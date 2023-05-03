@@ -9,6 +9,7 @@ COPY package.json ./
 RUN pnpm i --offline
 
 COPY . .
+ARG BACKEND_URL
 RUN npm run build
 
 FROM node:18-alpine AS PRODUCTION_PACKAGE
