@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator nestgraphql {
+  provider                        = "node node_modules/prisma-nestjs-graphql"
+  output                          = "../src/@generated"
+  purgeOutput                     = true
+  graphqlScalars_BigInt_name      = "GraphQLBigInt"
+  graphqlScalars_BigInt_specifier = "graphql-scalars"
+}
+
+model TikTokPost {
+  id           String  @unique
+  heartCount   BigInt?
+  shareCount   BigInt?
+  commentCount BigInt?
+  description  String?
+  videoCover   String?
+  videoWidth   Int?
+  videoHeight  Int?
+  videoHash    String?
+  videoUrl     String?
+
+  authorId String?
+  author   TikTokUser? @relation(fields: [authorId], references: [id])
+
+  i_createdAt DateTime  @default(now())
+  i_updatedAt DateTime  @updatedAt
+  i_fetchedAt DateTime?
+}
+
+model TikTokUser {
+  id         String  @unique
+  name       String?
+  nickname   String?
+  avatarUrl  String?
+  avatarHash String?
+
+  tikTokPosts TikTokPost[]
+
+  i_createdAt DateTime  @default(now())
+  i_updatedAt DateTime  @updatedAt
+  i_fetchedAt DateTime?
+}
