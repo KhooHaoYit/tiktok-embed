@@ -27,5 +27,6 @@ FROM node:18-alpine
 WORKDIR /app
 COPY --from=PRODUCTION_PACKAGE /app/node_modules /app/node_modules
 COPY --from=PRODUCTION_PACKAGE /app/package.json /app/package.json
+COPY --from=PRODUCTION_PACKAGE /app/prisma/schema.prisma /app/prisma/schema.prisma
 COPY --from=BUILDER /app/dist /app/dist
 CMD ["npm", "run", "start:prod"]
