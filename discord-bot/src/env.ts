@@ -7,6 +7,8 @@ export const env = createEnv({
     FRONTEND_URL: z.string(),
     INTERNAL_FRONTEND_URL: z.string(),
     SUGGESTION_CHANNEL_ID: z.string(),
+    SUPPORT_SERVER_INVITE_LINK: z.string(),
+    ENABLE_REPL: z.coerce.boolean().default(false),
   },
   client: {},
   runtimeEnv: process.env,

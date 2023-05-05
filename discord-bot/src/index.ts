@@ -5,6 +5,7 @@ import {
 import { env } from "./env";
 import { request } from 'undici';
 import { IntentsBitField } from "discord.js";
+import { start } from "repl";
 
 import { activate } from "./commands";
 
@@ -66,4 +67,9 @@ client.on('error', console.error);
 (async () => {
   await activate(client);
   await client.login(env.DISCORD_TOKEN);
+  if (!env.ENABLE_REPL)
+    return;
+  const repl = start();
+  repl.once('exit', () => client.destroy());
+  repl.context.client = client;
 })();
