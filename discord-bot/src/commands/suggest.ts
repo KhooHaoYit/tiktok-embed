@@ -36,9 +36,9 @@ export default {
     const suggestionChannel = await interaction.client.channels.fetch(env.SUGGESTION_CHANNEL_ID);
     if (!suggestionChannel || suggestionChannel.type !== ChannelType.GuildForum)
       return;
-    const name = <string>interaction.options.data.find(option => option.name === 'title')!.value;
-    const content = <string>interaction.options.data.find(option => option.name === 'description')!.value;
-    const attachment = interaction.options.data.find(option => option.name === 'attachment')?.attachment;
+    const name = interaction.options.getString('title')!;
+    const content = interaction.options.getString('description')!;
+    const attachment = interaction.options.getAttachment('attachment');
     const tagId = suggestionChannel.availableTags.find(tag => tag.name === 'Untagged')?.id;
     if (!tagId)
       return;

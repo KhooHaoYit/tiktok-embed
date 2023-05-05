@@ -7,9 +7,11 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
+import help from "./commands/help";
 import suggest from "./commands/suggest";
 
 const commands = {
+  help,
   suggest,
 } as Record<string, {
   activate: (client: Client) => Promise<void>,
