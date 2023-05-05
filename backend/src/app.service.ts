@@ -112,7 +112,6 @@ export class AppService {
 
   async #ensureAvatarImageUpdated(id: string, url: string) {
     const newHash = url.replace(/~[^]*$/, '').replace(/^[^]*\//, '');
-    console.log(url);
     const shouldUpdate = await this.prisma.tikTokUser.findUnique({
       where: { id },
       select: { avatarHash: true },

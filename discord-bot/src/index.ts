@@ -1,7 +1,12 @@
-import { Client, MessageFlags, Partials } from "discord.js";
+import {
+  Client,
+  Partials,
+} from "discord.js";
 import { env } from "./env";
 import { request } from 'undici';
 import { IntentsBitField } from "discord.js";
+
+import { activate } from "./commands";
 
 const client = new Client({
   intents: [
@@ -39,7 +44,7 @@ client.on('messageCreate', async msg => {
     postId = longLink.replace(/^[^]*\//, '')
   if (!postId)
     return;
-  const { statusCode } = await request(`${env.FRONTEND_URL}/v/${postId}/oembed`, { method: 'HEAD' });
+  const { statusCode } = await request(`${env.INTERNAL_FRONTEND_URL}/v/${postId}/oembed`, { method: 'HEAD' });
   if (statusCode !== 200)
     return void await msg.react('🔥');
   await Promise.all([
@@ -58,4 +63,7 @@ ${env.FRONTEND_URL}/v/${postId}/video
 
 client.on('error', console.error);
 
-client.login(env.DISCORD_TOKEN);
+(async () => {
+  await activate(client);
+  await client.login(env.DISCORD_TOKEN);
+})();
