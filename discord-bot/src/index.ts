@@ -1,5 +1,6 @@
 import {
   Client,
+  Message,
   Partials,
 } from "discord.js";
 import { env } from "./env";
@@ -9,7 +10,7 @@ import { start } from "repl";
 
 import { activate } from "./commands";
 
-const client = new Client({
+const clinetOptions = {
   intents: [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMessages,
@@ -24,13 +25,8 @@ const client = new Client({
     Partials.GuildScheduledEvent,
     Partials.ThreadMember,
   ],
-});
-
-client.on('ready', () => {
-  console.log('Logged in as', client.user!.tag);
-});
-
-client.on('messageCreate', async msg => {
+};
+const onMessage = async (msg: Message) => {
   if (msg.author.bot)
     return;
   let postId: string = '';
@@ -60,16 +56,30 @@ ${env.FRONTEND_URL}/v/${postId}/video
       failIfNotExists: false,
     }),
   ]);
-});
+}
 
+const client = new Client(clinetOptions);
+client.on('ready', () => console.log('Logged in as', client.user!.tag));
+client.on('messageCreate', onMessage);
 client.on('error', console.error);
 
 (async () => {
+  const clients: Client[] = [];
   await activate(client);
-  await client.login(env.DISCORD_TOKEN);
+  await client.login(env.DISCORD_TOKEN)
+    .then(() => clients.push(client));
+  for (const [index, token] of Object.entries(env.EXTRA_DISCORD_TOKENS)) {
+    const client = new Client(clinetOptions);
+    client.on('ready', () => console.log('Logged in as', client.user!.tag));
+    client.on('messageCreate', onMessage);
+    client.on('error', console.error);
+    await client.login(token)
+      .then(() => clients.push(client))
+      .catch(() => console.error(`Failed to login extra token in index ${index}`));
+  }
   if (!env.ENABLE_REPL)
     return;
   const repl = start();
-  repl.once('exit', () => client.destroy());
+  repl.once('exit', () => clients.map(client => client.destroy()));
   repl.context.client = client;
 })();

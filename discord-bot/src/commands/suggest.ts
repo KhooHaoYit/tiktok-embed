@@ -24,6 +24,8 @@ export default {
       .setName('attachment')
       .setDescription('The attachment of the suggestion')),
   async activate(client: Client) {
+    if (!env.SUGGESTION_CHANNEL_ID)
+      throw new Error(`SUGGESTION_CHANNEL_ID is undefined`);
     const suggestionChannel = await client.channels.fetch(env.SUGGESTION_CHANNEL_ID);
     if (!suggestionChannel)
       throw new Error(`Suggestion channel does not exists`);
@@ -33,7 +35,7 @@ export default {
       throw new Error(`Suggestion channel does not have tag 'Untagged'`);
   },
   async execute(interaction: ChatInputCommandInteraction) {
-    const suggestionChannel = await interaction.client.channels.fetch(env.SUGGESTION_CHANNEL_ID);
+    const suggestionChannel = await interaction.client.channels.fetch(env.SUGGESTION_CHANNEL_ID!);
     if (!suggestionChannel || suggestionChannel.type !== ChannelType.GuildForum)
       return;
     const name = interaction.options.getString('title')!;

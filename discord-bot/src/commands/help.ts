@@ -18,6 +18,8 @@ export default {
     const application = await client.application!.fetch();
     if (!application.installParams)
       console.warn(`\`application.installParams\` is null, issue might occur when generating bot invite link`);
+    if (!env.SUPPORT_SERVER_INVITE_LINK)
+      throw new Error(`SUPPORT_SERVER_INVITE_LINK is undefined`);
   },
   async execute(interaction: ChatInputCommandInteraction) {
     const client = interaction.client;
@@ -46,7 +48,7 @@ export default {
             new ButtonBuilder()
               .setStyle(ButtonStyle.Link)
               .setLabel('Support Server')
-              .setURL(env.SUPPORT_SERVER_INVITE_LINK),
+              .setURL(env.SUPPORT_SERVER_INVITE_LINK!),
             new ButtonBuilder()
               .setStyle(ButtonStyle.Link)
               .setLabel('Bot Invite Link')
