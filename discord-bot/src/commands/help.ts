@@ -31,7 +31,7 @@ export default {
           .addFields([
             {
               name: 'How to use',
-              value: 'Send a message that contains a tiktok link, the bot will try and suppress the embed and sends a message that allows user to view the video in discord',
+              value: 'Send a message that contains a tiktok link, the bot will try and delete the message and sends a message that allows user to view the video in discord',
             },
             {
               name: 'Got question, suggestion, or bug?',

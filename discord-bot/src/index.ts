@@ -9,6 +9,7 @@ import { IntentsBitField } from "discord.js";
 import { start } from "repl";
 
 import { activate } from "./commands";
+import { URL } from "url";
 
 const clinetOptions = {
   intents: [
@@ -44,18 +45,17 @@ const onMessage = async (msg: Message) => {
   const { statusCode } = await request(`${env.INTERNAL_FRONTEND_URL}/v/${postId}/oembed`, { method: 'HEAD' });
   if (statusCode !== 200)
     return void await msg.react('🔥');
-  await Promise.all([
-    msg.suppressEmbeds()
-      .catch(() => { }),
-    msg.reply({
-      content: `
+  if (msg.content.indexOf(' ') === -1)
+    msg.delete().catch(() => { });
+  else msg.suppressEmbeds().catch(() => { });
+  await msg.channel.send({
+    content: `
+Requested by ${msg.author}
 ${env.FRONTEND_URL}/v/${postId}/embed
 ${env.FRONTEND_URL}/v/${postId}/video
 `.trim(),
-      allowedMentions: { repliedUser: false },
-      failIfNotExists: false,
-    }),
-  ]);
+    allowedMentions: { users: [] },
+  });
 }
 
 const client = new Client(clinetOptions);
