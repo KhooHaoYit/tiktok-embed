@@ -15,6 +15,11 @@ export const env = createEnv({
     SUGGESTION_CHANNEL_ID: z.string().optional(),
     SUPPORT_SERVER_INVITE_LINK: z.string().optional(),
     ENABLE_REPL: z.coerce.boolean().default(false),
+    // Sentry
+    SENTRY_DSN: z.string().optional(),
+    SENTRY_ENVIRONMENT: z.enum(['local', 'production']).default('local'),
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(1),
+    SENTRY_PROFILES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(1),
   },
   client: {},
   runtimeEnv: process.env,

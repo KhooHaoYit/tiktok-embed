@@ -4,6 +4,8 @@
 		"build": "tsc --build"
 	},
 	"dependencies": {
+		"@sentry/node": "^7.57.0",
+		"@sentry/profiling-node": "^1.0.7",
 		"@t3-oss/env-core": "^0.2.2",
 		"discord.js": "^14.10.2",
 		"dotenv": "^16.0.3",

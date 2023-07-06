@@ -7,9 +7,35 @@ import { env } from "./env";
 import { request } from 'undici';
 import { IntentsBitField } from "discord.js";
 import { start } from "repl";
-
 import { activate } from "./commands";
-import { URL } from "url";
+
+import {
+  Integrations,
+  autoDiscoverNodePerformanceMonitoringIntegrations,
+  captureException,
+  getCurrentHub,
+  init,
+  startTransaction,
+} from "@sentry/node";
+import { ProfilingIntegration } from "@sentry/profiling-node";
+
+if (env.SENTRY_DSN)
+  init({
+    dsn: env.SENTRY_DSN,
+    environment: env.SENTRY_ENVIRONMENT,
+    integrations: [
+      new Integrations.Http({ tracing: true }),
+      new ProfilingIntegration(),
+      new Integrations.LocalVariables({
+        captureAllExceptions: true,
+      }),
+      ...autoDiscoverNodePerformanceMonitoringIntegrations(),
+    ],
+    tracesSampleRate: env.SENTRY_TRACES_SAMPLE_RATE,
+    profilesSampleRate: env.SENTRY_PROFILES_SAMPLE_RATE,
+    includeLocalVariables: true,
+  });
+
 
 const clinetOptions = {
   intents: [
@@ -30,6 +56,17 @@ const clinetOptions = {
 const onMessage = async (msg: Message) => {
   if (msg.author.bot)
     return;
+  const tx = startTransaction({
+    op: "transaction",
+    name: "HandleMessage",
+  });
+  getCurrentHub()
+    .configureScope(scope => scope.setSpan(tx));
+  await doTiktokEmbed(msg)
+    .catch(captureException)
+    .finally(() => tx.finish());
+}
+const doTiktokEmbed = async (msg: Message) => {
   let postId: string = '';
   const shortLink = msg.content.match(/https?:\/\/(?:vt\.tiktok\.com|(?:www\.|)tiktok\.com\/t)\/[a-zA-Z0-9]+/)?.at(0);
   if (shortLink)
@@ -61,7 +98,10 @@ ${env.FRONTEND_URL}/v/${postId}/video
 const client = new Client(clinetOptions);
 client.on('ready', () => console.log('Logged in as', client.user!.tag));
 client.on('messageCreate', onMessage);
-client.on('error', console.error);
+client.on('error', err => {
+  captureException(err);
+  console.error(err);
+});
 
 (async () => {
   const clients: Client[] = [];
@@ -72,7 +112,10 @@ client.on('error', console.error);
     const client = new Client(clinetOptions);
     client.on('ready', () => console.log('Logged in as', client.user!.tag));
     client.on('messageCreate', onMessage);
-    client.on('error', console.error);
+    client.on('error', err => {
+      captureException(err);
+      console.error(err);
+    });
     await client.login(token)
       .then(() => clients.push(client))
       .catch(() => console.error(`Failed to login extra token in index ${index}`));
