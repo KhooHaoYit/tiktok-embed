@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { request } from 'undici';
 import { tiktokSchema } from './tiktokSchema';
 import { z } from 'zod';
 import { AttachmentBuilder, WebhookClient } from 'discord.js';
 import { env } from './env';
+import { writeFile } from 'fs/promises';
 
 @Injectable()
 export class AppService {
@@ -23,8 +23,14 @@ export class AppService {
   async scrapePost(id: string) {
     const { body, headers } = await request(`https://www.tiktok.com/@/video/${id}`, { maxRedirections: 1 });
     const text = await body.text();
-    const data = JSON.parse(text.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0) ?? '') as z.infer<typeof tiktokSchema>;
-    // return data;
+    const data = JSON.parse(
+      text.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
+      ?? 'null'
+    ) as z.infer<typeof tiktokSchema> | null;
+    if (!data) {
+      await writeFile(`${Date.now()}.${id}.${Math.floor(Math.random() * 1_000)}.html`, text);
+      throw new Error(`Unable to extract info`);
+    }
     const [postId, item] = Object.entries(data.ItemModule).at(0) || [];
     const [name, author] = Object.entries(data.UserModule.users).at(0) || [];
     if (!postId || !item || !author)
