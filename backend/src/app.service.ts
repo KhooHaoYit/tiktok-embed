@@ -21,17 +21,10 @@ export class AppService {
   }
 
   async scrapePost(id: string) {
-    const url = await this.tryResolveUrl(id);
-    const { body, headers } = await request(url);
-    const html = await body.text();
-    const data = JSON.parse(
-      html.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
-      ?? 'null'
-    ) as z.infer<typeof tiktokSchema> | null;
-    if (!data) {
-      await writeFile(`${Date.now()}.${id}.${Math.floor(Math.random() * 1_000)}.html`, html);
-      throw new Error(`Unable to extract info`);
-    }
+    const {
+      data,
+      res: { headers },
+    } = await this.tryFetchPost(id);
     const [postId, item] = Object.entries(data.ItemModule).at(0) || [];
     const [name, author] = Object.entries(data.UserModule.users).at(0) || [];
     if (!postId || !item || !author)
@@ -68,20 +61,22 @@ export class AppService {
     ]);
   }
 
-  async tryResolveUrl(id: string) {
+  async tryFetchPost(id: string) {
     for (let retryCount = 0; retryCount < 16; ++retryCount) {
-      const { headers } = await request(
-        `https://www.tiktok.com/@/video/${id}`,
-        {
-          method: 'HEAD',
-          maxRedirections: 0,
-        },
-      );
-      if (headers['location'])
-        return `https://www.tiktok.com${<string>headers['location']}`;
+      const res = await request(`https://www.tiktok.com/@/video/${id}`);
+      const html = await res.body.text();
+      const data = JSON.parse(
+        html.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
+        ?? 'null'
+      ) as z.infer<typeof tiktokSchema> | null;
+      if (data)
+        return {
+          res,
+          data,
+        };
       await new Promise(rs => setTimeout(rs, 1_000));
     }
-    throw new Error(`Failed to resolve url`);
+    throw new Error(`Unable to extract info`);
   }
 
   async #ensureVideoUpdated(data: {
