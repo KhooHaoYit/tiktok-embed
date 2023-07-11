@@ -63,7 +63,7 @@ export class AppService {
 
   async tryFetchPost(id: string) {
     for (let retryCount = 0; retryCount < 16; ++retryCount) {
-      const res = await request(`https://www.tiktok.com/@/video/${id}`);
+      const res = await request(`https://www.tiktok.com/@/video/${id}`, { maxRedirections: 1 });
       const html = await res.body.text();
       const data = JSON.parse(
         html.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
