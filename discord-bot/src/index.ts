@@ -68,7 +68,7 @@ const onMessage = async (msg: Message) => {
 }
 const doTiktokEmbed = async (msg: Message) => {
   let postId: string = '';
-  const shortLink = msg.content.match(/https?:\/\/(?:vt\.tiktok\.com|(?:www\.|)tiktok\.com\/t)\/[a-zA-Z0-9]+/)?.at(0);
+  const shortLink = msg.content.match(/https?:\/\/(?:[^.]+\.|)tiktok\.com(?:\/t|)\/[a-zA-Z0-9]+/)?.at(0);
   if (shortLink)
     postId = await request(shortLink, { method: 'HEAD' })
       .then(({ headers }) => (<string>headers.location)
