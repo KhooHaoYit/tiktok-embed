@@ -62,19 +62,28 @@ export class AppService {
   }
 
   async tryFetchPost(id: string) {
-    for (let retryCount = 0; retryCount < 16; ++retryCount) {
+    for (
+      let retryCount = 0
+      ; retryCount < 16
+      ; (
+        ++retryCount,
+        await new Promise(rs => setTimeout(rs, 1_000))
+      )
+    ) {
       const res = await request(`https://www.tiktok.com/@/video/${id}`, { maxRedirections: 1 });
       const html = await res.body.text();
+      if (res.statusCode !== 200)
+        continue;
       const data = JSON.parse(
         html.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
         ?? 'null'
       ) as z.infer<typeof tiktokSchema> | null;
-      if (data)
-        return {
-          res,
-          data,
-        };
-      await new Promise(rs => setTimeout(rs, 1_000));
+      if (!data)
+        continue;
+      return {
+        res,
+        data,
+      };
     }
     throw new Error(`Unable to extract info`);
   }
