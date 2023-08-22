@@ -3,10 +3,16 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    BACKEND_URL: z.string(),
+    TIKTOK_API_URL: z.string(),
+    INSTAGRAM_API_URL: z.string(),
+    INSTAGRAM_API_ACCESS_TOKEN: z
+      .string()
+      .optional(),
   },
   client: {},
   runtimeEnv: {
-    BACKEND_URL: process.env.BACKEND_URL,
+    TIKTOK_API_URL: process.env.TIKTOK_API_URL,
+    INSTAGRAM_API_URL: process.env.INSTAGRAM_API_URL,
+    INSTAGRAM_API_ACCESS_TOKEN: process.env.INSTAGRAM_API_ACCESS_TOKEN,
   },
 });

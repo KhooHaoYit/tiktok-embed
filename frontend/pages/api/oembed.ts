@@ -1,22 +1,31 @@
-import { fetchTikTokPost, getTikTokPost } from "@/backend";
+import { instagramEmbedEmbedder } from "@/embedder/providers/instagram";
+import { tiktokEmbedEmbedder } from "@/embedder/providers/tiktok";
 import { NextApiRequest, NextApiResponse } from "next"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const postId = req.query.id as string;
-  const post = await getTikTokPost(postId)
-    || await fetchTikTokPost(postId);
-  if (!post)
-    throw new Error(`Unable to fetch postId: ${postId}`);
-  res.status(200)
-    .json({
-      author_name: [
-        ['💬', +post.commentCount],
-        ['🔁', +post.shareCount],
-        ['❤️', +post.heartCount],
-      ].filter(item => item[1])
-        .map(([emoji, amount]) => `${amount.toLocaleString('en')} ${emoji}`)
-        .join('    '),
-      author_url: `https://www.tiktok.com/@${post.author.name}/video/${post.id}`,
-      provider_name: 'TikTok Embed',
-    });
+  switch (req.query.type as string) {
+    default: {
+      res.status(404).json({ error: 'Invalid type' });
+    } break;
+    case 'instagram': {
+      const shortcode = req.query.shortcode as string;
+      const { embed } = await instagramEmbedEmbedder(shortcode);
+      res.status(200)
+        .json({
+          author_name: embed.authorName,
+          author_url: embed.authorUrl,
+          provider_name: embed.providerName,
+        });
+    } break;
+    case 'tiktok': {
+      const postId = req.query.id as string;
+      const { embed } = await tiktokEmbedEmbedder(postId);
+      res.status(200)
+        .json({
+          author_name: embed.authorName,
+          author_url: embed.authorUrl,
+          provider_name: embed.providerName,
+        });
+    } break;
+  }
 }

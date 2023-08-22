@@ -15,6 +15,13 @@ export const env = createEnv({
     SUGGESTION_CHANNEL_ID: z.string().optional(),
     SUPPORT_SERVER_INVITE_LINK: z.string().optional(),
     ENABLE_REPL: z.coerce.boolean().default(false),
+    // Tiktok
+    TIKTOK_API_URL: z.string(),
+    // Instagram
+    INSTAGRAM_API_URL: z.string(),
+    INSTAGRAM_API_ACCESS_TOKEN: z
+      .string()
+      .optional(),
     // Sentry
     SENTRY_DSN: z.string().optional(),
     SENTRY_ENVIRONMENT: z.enum(['local', 'production']).default('local'),

@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@prisma/client':
+    specifier: ^5.1.1
+    version: 5.1.1(prisma@5.1.1)
   '@sentry/node':
     specifier: ^7.57.0
     version: 7.57.0
@@ -20,6 +23,9 @@ dependencies:
   dotenv:
     specifier: ^16.0.3
     version: 16.0.3
+  prisma:
+    specifier: ^5.1.1
+    version: 5.1.1
   undici:
     specifier: ^5.22.0
     version: 5.22.0
@@ -124,6 +130,29 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@prisma/client@5.1.1(prisma@5.1.1):
+    resolution: {integrity: sha512-fxcCeK5pMQGcgCqCrWsi+I2rpIbk0rAhdrN+ke7f34tIrgPwA68ensrpin+9+fZvuV2OtzHmuipwduSY6HswdA==}
+    engines: {node: '>=16.13'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e
+      prisma: 5.1.1
+    dev: false
+
+  /@prisma/engines-version@5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e:
+    resolution: {integrity: sha512-owZqbY/wucbr65bXJ/ljrHPgQU5xXTSkmcE/JcbqE1kusuAXV/TLN3/exmz21SZ5rJ7WDkyk70J2G/n68iogbQ==}
+    dev: false
+
+  /@prisma/engines@5.1.1:
+    resolution: {integrity: sha512-NV/4nVNWFZSJCCIA3HIFJbbDKO/NARc9ej0tX5S9k2EVbkrFJC4Xt9b0u4rNZWL4V+F5LAjvta8vzEUw0rw+HA==}
+    requiresBuild: true
+    dev: false
 
   /@sapphire/async-queue@1.5.0:
     resolution: {integrity: sha512-JkLdIsP8fPAdh9ZZjrbHWR/+mZj0wvKS5ICibcLrRI1j84UmLMshx5n9QmL8b95d4onJ2xxiyugTgSAX7AalmA==}
@@ -893,6 +922,15 @@ packages:
   /peek-readable@5.0.0:
     resolution: {integrity: sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==}
     engines: {node: '>=14.16'}
+    dev: false
+
+  /prisma@5.1.1:
+    resolution: {integrity: sha512-WJFG/U7sMmcc6TjJTTifTfpI6Wjoh55xl4AzopVwAdyK68L9/ogNo8QQ2cxuUjJf/Wa82z/uhyh3wMzvRIBphg==}
+    engines: {node: '>=16.13'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 5.1.1
     dev: false
 
   /promise-retry@2.0.1:

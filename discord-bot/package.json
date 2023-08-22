@@ -1,14 +1,16 @@
 {
 	"scripts": {
-		"start": "node -r dotenv/config dist",
+		"start": "prisma migrate deploy && node -r dotenv/config dist",
 		"build": "tsc --build"
 	},
 	"dependencies": {
+		"@prisma/client": "^5.1.1",
 		"@sentry/node": "^7.57.0",
 		"@sentry/profiling-node": "^1.0.7",
 		"@t3-oss/env-core": "^0.2.2",
 		"discord.js": "^14.10.2",
 		"dotenv": "^16.0.3",
+		"prisma": "^5.1.1",
 		"undici": "^5.22.0",
 		"zod": "^3.21.4"
 	},

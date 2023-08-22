@@ -7,10 +7,12 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
+import configure from "./commands/configure";
 import help from "./commands/help";
 import suggest from "./commands/suggest";
 
 const commands = {
+  configure,
   help,
   suggest,
 } as Record<string, {
@@ -20,7 +22,7 @@ const commands = {
   onError: (interaction: ChatInputCommandInteraction, error: Error) => Promise<void>,
 }>;
 
-export async function activate(client: Client) {
+export function activate(client: Client) {
   client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand())
       return;

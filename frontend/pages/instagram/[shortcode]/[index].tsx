@@ -1,4 +1,4 @@
-import { fetchTikTokPost, getTikTokPost } from '@/backend';
+import { instagramAttachmentEmbedder } from '@/embedder/providers/instagram';
 import {
   GetServerSideProps,
   InferGetServerSidePropsType,
@@ -11,11 +11,11 @@ export default function Page(props: InferGetServerSidePropsType<typeof getServer
       <Head>
         <meta
           httpEquiv="Refresh"
-          content={`0; URL=https://www.tiktok.com/@${props.post.author.name}/video/${props.post.id}`}
+          content={`0; URL=${props.embedder.redirectUrl}`}
         />
         <meta
           property="og:image"
-          content={props.post.videoCover}
+          content={props.embedder.video.imageUrl}
         />
         <meta
           property="og:type"
@@ -23,30 +23,35 @@ export default function Page(props: InferGetServerSidePropsType<typeof getServer
         />
         <meta
           property="og:video:url"
-          content={props.post.videoUrl}
+          content={props.embedder.video.videoUrl}
         />
         <meta
           property="og:video:width"
-          content={props.post.videoWidth + ''}
+          content={props.embedder.video.width + ''}
         />
         <meta
           property="og:video:height"
-          content={props.post.videoHeight + ''}
+          content={props.embedder.video.height + ''}
         />
       </Head>
     </>
-  )
+  );
 }
 
 export const getServerSideProps = async function (context) {
-  const postId = context.query.id as string;
-  const result = await getTikTokPost(postId)
-    || await fetchTikTokPost(postId);
-  if (!result)
-    throw new Error(`Unable to fetch postId: ${postId}`);
+  const shortcode = context.query.shortcode as string;
+  const index = +(context.query.index as string);
+  const result = await instagramAttachmentEmbedder(shortcode, index);
+  if (result.image)
+    return {
+      redirect: {
+        destination: result.image.url,
+        permanent: false,
+      },
+    };
   return {
     props: {
-      post: result,
+      embedder: result,
     },
   };
 } satisfies GetServerSideProps;

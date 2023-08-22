@@ -4,10 +4,8 @@ import {
   Partials,
 } from "discord.js";
 import { env } from "./env";
-import { request } from 'undici';
 import { IntentsBitField } from "discord.js";
 import { start } from "repl";
-import { activate } from "./commands";
 
 import {
   Integrations,
@@ -18,6 +16,16 @@ import {
   startTransaction,
 } from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
+import {
+  activate as tiktokActivate,
+  onMessage as tiktokOnMessage,
+} from "./providers/tiktok";
+import {
+  activate as instagramActivate,
+  onMessage as instagramOnMessage,
+} from "./providers/instagram";
+import { activate } from "./commands";
+import { isEnabled } from "./config";
 
 if (env.SENTRY_DSN)
   init({
@@ -54,7 +62,7 @@ const clinetOptions = {
   ],
 };
 const onMessage = async (msg: Message) => {
-  if (msg.author.bot)
+  if (msg.author.bot || !msg.guild)
     return;
   const tx = startTransaction({
     op: "transaction",
@@ -62,64 +70,74 @@ const onMessage = async (msg: Message) => {
   });
   getCurrentHub()
     .configureScope(scope => scope.setSpan(tx));
-  await doTiktokEmbed(msg)
-    .catch(captureException)
-    .finally(() => tx.finish());
+  let hasError = false;
+  let totalEmbeded = 0;
+  const onResults = (results: PromiseSettledResult<number>[]) => {
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        captureException(result.reason);
+        hasError = true;
+        continue;
+      }
+      totalEmbeded += result.value;
+    }
+  }
+
+  await Promise.allSettled([
+    isEnabled(msg.guild.id, 'instagram').then(async enabled => {
+      if (!enabled)
+        return;
+      await instagramOnMessage(msg)
+        .then(onResults);
+    }),
+    isEnabled(msg.guild.id, 'tiktok').then(async enabled => {
+      if (!enabled)
+        return;
+      await tiktokOnMessage(msg)
+        .then(onResults);
+    }),
+  ]);
+
+  if (hasError)
+    msg.react('🔥').catch(() => { });
+  if (
+    msg.content.indexOf(' ') === -1
+    && totalEmbeded === 1
+    && msg.deletable
+  ) await msg.delete().catch(() => { });
+  else if (totalEmbeded)
+    await msg.suppressEmbeds().catch(() => { });
+  tx.finish();
 }
-const doTiktokEmbed = async (msg: Message) => {
-  let postId: string = '';
-  const shortLink = msg.content.match(/https?:\/\/(?:[^.]+\.|)tiktok\.com(?:\/t|)\/[a-zA-Z0-9]+/)?.at(0);
-  if (shortLink)
-    postId = await request(shortLink, { method: 'HEAD' })
-      .then(({ headers }) => (<string>headers.location)
-        .replace(/\?[^]*$/, '')
-        .replace(/^[^]*\//, ''));
-  const longLink = msg.content.match(/https?:\/\/(?:www\.|)tiktok\.com\/@[^\/]+\/video\/\d+/)?.at(0);
-  if (longLink)
-    postId = longLink.replace(/^[^]*\//, '')
-  if (!postId)
-    return;
-  const { statusCode } = await request(`${env.INTERNAL_FRONTEND_URL}/v/${postId}/oembed`, { method: 'HEAD' });
-  if (statusCode !== 200)
-    return void await msg.react('🔥');
-  if (msg.content.indexOf(' ') === -1)
-    msg.delete().catch(() => { });
-  else msg.suppressEmbeds().catch(() => { });
-  await msg.channel.send({
-    content: `
-Requested by ${msg.author}
-${env.FRONTEND_URL}/v/${postId}/embed
-${env.FRONTEND_URL}/v/${postId}/video
-`.trim(),
-    allowedMentions: { users: [] },
+
+const setup = (client: Client) => {
+  client.on('ready', () => console.log('Logged in as', client.user!.tag));
+  client.on('messageCreate', onMessage);
+  client.on('error', err => {
+    captureException(err);
+    console.error(err);
   });
+  tiktokActivate(client);
+  instagramActivate(client);
 }
 
 const client = new Client(clinetOptions);
-client.on('ready', () => console.log('Logged in as', client.user!.tag));
-client.on('messageCreate', onMessage);
-client.on('error', err => {
-  captureException(err);
-  console.error(err);
-});
+setup(client);
+activate(client);
 
 (async () => {
   const clients: Client[] = [];
-  await activate(client);
   await client.login(env.DISCORD_TOKEN)
     .then(() => clients.push(client));
+
   for (const [index, token] of Object.entries(env.EXTRA_DISCORD_TOKENS)) {
     const client = new Client(clinetOptions);
-    client.on('ready', () => console.log('Logged in as', client.user!.tag));
-    client.on('messageCreate', onMessage);
-    client.on('error', err => {
-      captureException(err);
-      console.error(err);
-    });
+    setup(client);
     await client.login(token)
       .then(() => clients.push(client))
       .catch(() => console.error(`Failed to login extra token in index ${index}`));
   }
+
   if (!env.ENABLE_REPL)
     return;
   const repl = start();

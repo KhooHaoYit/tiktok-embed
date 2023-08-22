@@ -10,44 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator nestgraphql {
-  provider                        = "node node_modules/prisma-nestjs-graphql"
-  output                          = "../src/@generated"
-  purgeOutput                     = true
-  graphqlScalars_BigInt_name      = "GraphQLBigInt"
-  graphqlScalars_BigInt_specifier = "graphql-scalars"
+model Attachment {
+  id       String  @unique
+  width    Int?
+  height   Int?
+  imageUrl String?
+  videoUrl String?
+
+  i_createdAt DateTime @default(now())
+  i_updatedAt DateTime @updatedAt
 }
 
-model TikTokPost {
-  id           String  @unique
-  heartCount   BigInt?
-  shareCount   BigInt?
-  commentCount BigInt?
-  description  String?
-  videoCover   String?
-  videoWidth   Int?
-  videoHeight  Int?
-  videoHash    String?
-  videoUrl     String?
+model Post {
+  id          String  @unique
+  description String?
+  likes       Int?
+  shares      Int?
+  comments    Int?
+
+  attachmentIds String[]
 
   authorId String?
-  author   TikTokUser? @relation(fields: [authorId], references: [id])
+  author   User?   @relation(fields: [authorId], references: [id])
 
-  i_createdAt DateTime  @default(now())
-  i_updatedAt DateTime  @updatedAt
-  i_fetchedAt DateTime?
+  i_createdAt DateTime @default(now())
+  i_updatedAt DateTime @updatedAt
 }
 
-model TikTokUser {
-  id         String  @unique
-  name       String?
-  nickname   String?
-  avatarUrl  String?
-  avatarHash String?
+model User {
+  id        String  @unique
+  username  String?
+  handle    String?
+  avatarUrl String?
 
-  tikTokPosts TikTokPost[]
+  posts Post[]
 
-  i_createdAt DateTime  @default(now())
-  i_updatedAt DateTime  @updatedAt
-  i_fetchedAt DateTime?
+  i_createdAt DateTime @default(now())
+  i_updatedAt DateTime @updatedAt
 }

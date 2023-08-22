@@ -1,6 +1,12 @@
 import { PrismaService } from 'nestjs-prisma';
 import { AppService } from './app.service';
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 
 @Controller()
 export class AppController {
@@ -10,30 +16,44 @@ export class AppController {
     private prisma: PrismaService,
   ) { }
 
-  @Get('/tikTokPost/:id')
+  @Get('/posts/:id')
   async getPost(
     @Param('id') id: string,
+    @Query() {
+      includeAuthor,
+      includeAttachments,
+    }: Record<'includeAuthor' | 'includeAttachments', string>,
   ) {
-    return await this.prisma.tikTokPost.findUnique({
+    const post = await this.prisma.post.findUnique({
       where: { id },
-      include: { author: true },
-    }).then(stringify);
+      include: { author: !!includeAuthor },
+    });
+    if (!post)
+      return JSON.stringify(null);
+    const attachments = includeAttachments
+      ? await this.prisma.attachment.findMany({
+        where: {
+          id: { in: post.attachmentIds },
+        }
+      }).then(attachments =>
+        Object.fromEntries(
+          attachments.map(attachment => [attachment.id, attachment])
+        )
+      )
+      : undefined;
+    return JSON.stringify({
+      ...post,
+      attachments,
+    });
   }
 
-  @Post('/tikTokPost/:id/fetch')
+  @Post('/posts/:id/fetch')
   async fetchPost(
     @Param('id') id: string,
+    @Query() includes: Record<'includeAuthor' | 'includeAttachments', string>,
   ) {
     await this.service.scrapePost(id);
-    return await this.getPost(id);
+    return await this.getPost(id, includes);
   }
 
-}
-
-function stringify(data: unknown) {
-  return JSON.stringify(data, (key, value) => {
-    if (typeof value === 'bigint')
-      return value.toString();
-    return value;
-  });
 }
