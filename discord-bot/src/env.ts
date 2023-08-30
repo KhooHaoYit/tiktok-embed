@@ -16,6 +16,9 @@ export const env = createEnv({
     ENABLE_REPL: z.coerce.boolean().default(false),
     // Tiktok
     TIKTOK_API_URL: z.string(),
+    TIKTOK_API_ACCESS_TOKEN: z
+      .string()
+      .optional(),
     // Instagram
     INSTAGRAM_API_URL: z.string(),
     INSTAGRAM_API_ACCESS_TOKEN: z

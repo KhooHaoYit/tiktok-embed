@@ -73,7 +73,7 @@ async function getInstagramPost(shortcode: string) {
 
 async function fetchInstagramPost(shortcode: string) {
   return await request(
-    env.INSTAGRAM_API_URL + `/shortcodes/${shortcode}`,
+    env.INSTAGRAM_API_URL + `/shortcodes/${shortcode}/fetch`,
     {
       method: 'POST',
       query: {

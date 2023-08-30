@@ -89,7 +89,7 @@ async function getInstagramPost(shortcode: string) {
     {
       query: {
         includeAuthor: 1,
-        includeAttachment: 1,
+        includeAttachments: 1,
       },
       headers: {
         Authorization: env.INSTAGRAM_API_ACCESS_TOKEN,
@@ -100,12 +100,12 @@ async function getInstagramPost(shortcode: string) {
 
 async function fetchInstagramPost(shortcode: string) {
   return await request(
-    env.INSTAGRAM_API_URL + `/shortcodes/${shortcode}`,
+    env.INSTAGRAM_API_URL + `/shortcodes/${shortcode}/fetch`,
     {
       method: 'POST',
       query: {
         includeAuthor: 1,
-        includeAttachment: 1,
+        includeAttachments: 1,
       },
       headers: {
         Authorization: env.INSTAGRAM_API_ACCESS_TOKEN,

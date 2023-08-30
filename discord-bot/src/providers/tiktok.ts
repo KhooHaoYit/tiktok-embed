@@ -97,10 +97,10 @@ async function getTiktokPost(post: string) {
     {
       query: {
         includeAuthor: 1,
-        includeAttachment: 1,
+        includeAttachments: 1,
       },
       headers: {
-        // Authorization: env.,
+        Authorization: env.TIKTOK_API_ACCESS_TOKEN,
       },
     },
   ).then(res => <Promise<null | Data>>res.body.json());
@@ -113,10 +113,10 @@ async function fetchTiktokPost(post: string) {
       method: 'POST',
       query: {
         includeAuthor: 1,
-        includeAttachment: 1,
+        includeAttachments: 1,
       },
       headers: {
-        // Authorization: env.,
+        Authorization: env.TIKTOK_API_ACCESS_TOKEN,
       },
     },
   ).then(res => <Promise<null | Data>>res.body.json());
