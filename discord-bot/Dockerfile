@@ -7,6 +7,8 @@ COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 COPY package.json ./
 RUN pnpm i --offline
+COPY prisma/schema.prisma prisma/schema.prisma
+RUN npx prisma generate
 
 COPY . .
 RUN npm run build
@@ -18,10 +20,13 @@ COPY pnpm-lock.yaml ./
 RUN pnpm fetch --prod
 COPY package.json ./
 RUN pnpm i -P --offline
+COPY prisma/schema.prisma prisma/schema.prisma
+RUN npx prisma generate
 
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=PRODUCTION_PACKAGE /app/node_modules /app/node_modules
 COPY --from=PRODUCTION_PACKAGE /app/package.json /app/package.json
+COPY --from=BUILDER /app/prisma /app/prisma
 COPY --from=BUILDER /app/dist /app/dist
 CMD ["npm", "run", "start"]
