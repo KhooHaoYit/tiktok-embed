@@ -16,10 +16,12 @@ export const instagramEmbedEmbedder = async function (shortcode: string) {
       color: '#ce0071',
       thumbnailUrl: result.author.avatarUrl,
       providerName: 'Instagram Auto Embed',
-      authorName: [
-        ['💬', +result.comments],
-        ['❤️', +result.likes],
-      ].filter(item => item[1] && !Number.isNaN(item[1]))
+      authorName: (
+        [
+          ['💬', +result.comments],
+          ['❤️', +result.likes],
+        ] satisfies [string, number][]
+      ).filter(item => item[1] && !Number.isNaN(item[1]) && item[1] > 0)
         .map(([emoji, amount]) => `${amount.toLocaleString('en')} ${emoji}`)
         .join('    '),
       authorUrl: redirectUrl,

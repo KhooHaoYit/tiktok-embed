@@ -16,11 +16,13 @@ export const tiktokEmbedEmbedder = async function (postId: string) {
       color: '#fe2c55',
       thumbnailUrl: result.author.avatarUrl,
       providerName: 'TikTok Auto Embed',
-      authorName: [
-        ['💬', +result.comments],
-        ['🔁', +result.shares],
-        ['❤️', +result.likes],
-      ].filter(item => item[1] && !Number.isNaN(item[1]))
+      authorName: (
+        [
+          ['💬', +result.comments],
+          ['🔁', +result.shares],
+          ['❤️', +result.likes],
+        ] satisfies [string, number][]
+      ).filter(item => item[1] && !Number.isNaN(item[1]) && item[1] > 0)
         .map(([emoji, amount]) => `${amount.toLocaleString('en')} ${emoji}`)
         .join('    '),
       authorUrl: redirectUrl,
