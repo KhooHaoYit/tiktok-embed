@@ -53,10 +53,12 @@ export default {
             { name: 'Ping', value: `${client.ws.ping}ms`, inline: true },
           ]),
       ],
-      components: [
-        new ActionRowBuilder<MessageActionRowComponentBuilder>()
-          .addComponents(...components),
-      ],
+      components: components.length
+        ? [
+          new ActionRowBuilder<MessageActionRowComponentBuilder>()
+            .addComponents(...components),
+        ]
+        : [],
       ephemeral: true,
     });
   },
