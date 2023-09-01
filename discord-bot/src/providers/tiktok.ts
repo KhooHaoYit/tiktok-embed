@@ -60,12 +60,18 @@ ${env.FRONTEND_URL}/tiktok/${postId}/0
           const url = new URL(urlText);
           let postId = '';
           if (/^(?:www\.|)tiktok\.com$/.test(url.hostname))
-            postId = url.pathname.split('/').at(-1)!;
+            postId = url.pathname
+              .split('/')
+              .filter(item => item)
+              .at(-1)!;
           else if (url.hostname.endsWith('.tiktok.com'))
             postId = await request(urlText, { method: 'HEAD' })
               .then(({ headers }) => {
                 const url = new URL(<string>headers.location);
-                return url.pathname.split('/').at(-1)!;
+                return url.pathname
+                  .split('/')
+                  .filter(item => item)
+                  .at(-1)!;
               });
           if (!postId)
             return 0;

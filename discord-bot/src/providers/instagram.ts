@@ -60,7 +60,10 @@ ${env.FRONTEND_URL}/instagram/${shortcode}/0
           const url = new URL(urlText);
           let shortcode = '';
           if (/^(?:www\.|)instagram\.com$/.test(url.hostname))
-            shortcode = url.pathname.split('/').at(-1)!;
+            shortcode = url.pathname
+              .split('/')
+              .filter(item => item)
+              .at(-1)!;
           if (!shortcode)
             return 0;
           await handle(shortcode);
