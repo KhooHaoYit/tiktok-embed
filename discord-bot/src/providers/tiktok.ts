@@ -58,13 +58,19 @@ ${env.FRONTEND_URL}/tiktok/${postId}/0
       text.match(/\bhttps?:\/\/\S+/gi)
         ?.map(async urlText => {
           const url = new URL(urlText);
-          let postId = '';
+          let postId = '', shortUrl = '';
+
           if (/^(?:www\.|)tiktok\.com$/.test(url.hostname))
-            postId = url.pathname
-              .split('/')
-              .filter(item => item)
-              .at(-1)!;
+            if (url.pathname.startsWith('/t/'))
+              shortUrl = urlText;
+            else
+              postId = url.pathname
+                .split('/')
+                .filter(item => item)
+                .at(-1)!;
           else if (url.hostname.endsWith('.tiktok.com'))
+            shortUrl = urlText;
+          if (shortUrl)
             postId = await request(urlText, { method: 'HEAD' })
               .then(({ headers }) => {
                 const url = new URL(<string>headers.location);
@@ -73,6 +79,7 @@ ${env.FRONTEND_URL}/tiktok/${postId}/0
                   .filter(item => item)
                   .at(-1)!;
               });
+
           if (!postId)
             return 0;
           if (!/^\d+$/.test(postId))
