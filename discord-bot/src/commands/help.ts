@@ -15,7 +15,8 @@ export default {
     .setName('help')
     .setDescription('Display information about the bot'),
   async activate(client: Client) {
-    // await client.application!.fetch();
+    if (client.application) // fetch client.application.installParams
+      await client.application.fetch();
   },
   async execute(interaction: ChatInputCommandInteraction) {
     const client = interaction.client;
