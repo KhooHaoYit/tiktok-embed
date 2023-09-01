@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
     } break;
     case 'tiktok': {
-      const postId = req.query.id as string;
+      const postId = req.query.postId as string;
       const { embed } = await tiktokEmbedEmbedder(postId);
       res.status(200)
         .json({
