@@ -69,15 +69,17 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
     embeds: [
       new EmbedBuilder()
         .setColor('#fe2c55')
-        // .setDescription(`${client.user} is a discord bot written by Khoo Hao Yit`)
+        .setTitle('Intergrations')
         .addFields([
           {
             name: 'TikTok',
-            value: tiktok + '',
+            value: tiktok ? 'Enabled' : 'Disabled',
+            inline: true,
           },
           {
             name: 'Instagram',
-            value: instagram + '',
+            value: instagram ? 'Enabled' : 'Disabled',
+            inline: true,
           },
         ]),
     ],

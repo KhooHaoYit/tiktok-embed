@@ -15,14 +15,25 @@ export default {
     .setName('help')
     .setDescription('Display information about the bot'),
   async activate(client: Client) {
-    const application = await client.application!.fetch();
-    if (!application.installParams)
-      console.warn(`\`application.installParams\` is null, issue might occur when generating bot invite link`);
-    if (!env.SUPPORT_SERVER_INVITE_LINK)
-      throw new Error(`SUPPORT_SERVER_INVITE_LINK is undefined`);
+    // await client.application!.fetch();
   },
   async execute(interaction: ChatInputCommandInteraction) {
     const client = interaction.client;
+    const components = [];
+    if (env.SUPPORT_SERVER_INVITE_LINK)
+      components.push(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setLabel('Support Server')
+          .setURL(env.SUPPORT_SERVER_INVITE_LINK)
+      );
+    if (client.application.installParams)
+      components.push(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setLabel('Bot Invite Link')
+          .setURL(client.generateInvite(client.application.installParams))
+      );
     await interaction.reply({
       embeds: [
         new EmbedBuilder()
@@ -44,16 +55,7 @@ export default {
       ],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>()
-          .addComponents(
-            new ButtonBuilder()
-              .setStyle(ButtonStyle.Link)
-              .setLabel('Support Server')
-              .setURL(env.SUPPORT_SERVER_INVITE_LINK!),
-            new ButtonBuilder()
-              .setStyle(ButtonStyle.Link)
-              .setLabel('Bot Invite Link')
-              .setURL(client.generateInvite(client.application!.installParams!)),
-          ),
+          .addComponents(...components),
       ],
       ephemeral: true,
     });
