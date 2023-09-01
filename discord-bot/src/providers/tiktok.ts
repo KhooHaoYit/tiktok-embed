@@ -108,7 +108,7 @@ async function getTiktokPost(post: string) {
 
 async function fetchTiktokPost(post: string) {
   return await request(
-    env.TIKTOK_API_URL + `/posts/${post}`,
+    env.TIKTOK_API_URL + `/posts/${post}/fetch`,
     {
       method: 'POST',
       query: {
