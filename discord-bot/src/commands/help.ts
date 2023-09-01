@@ -19,20 +19,32 @@ export default {
   },
   async execute(interaction: ChatInputCommandInteraction) {
     const client = interaction.client;
-    const components = [];
+    const components = [
+      [],
+      [
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setLabel('Terms of Service')
+          .setURL(env.FRONTEND_URL + '/termsOfService'),
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setLabel('Privacy Policy')
+          .setURL(env.FRONTEND_URL + '/privacyPolicy'),
+      ],
+    ];
     if (env.SUPPORT_SERVER_INVITE_LINK)
-      components.push(
+      components[0].push(
         new ButtonBuilder()
           .setStyle(ButtonStyle.Link)
           .setLabel('Support Server')
-          .setURL(env.SUPPORT_SERVER_INVITE_LINK)
+          .setURL(env.SUPPORT_SERVER_INVITE_LINK),
       );
     if (client.application.installParams)
-      components.push(
+      components[0].push(
         new ButtonBuilder()
           .setStyle(ButtonStyle.Link)
           .setLabel('Bot Invite Link')
-          .setURL(client.generateInvite(client.application.installParams))
+          .setURL(client.generateInvite(client.application.installParams)),
       );
     await interaction.reply({
       embeds: [
@@ -53,12 +65,10 @@ export default {
             { name: 'Ping', value: `${client.ws.ping}ms`, inline: true },
           ]),
       ],
-      components: components.length
-        ? [
-          new ActionRowBuilder<MessageActionRowComponentBuilder>()
-            .addComponents(...components),
-        ]
-        : [],
+      components: components
+        .filter(c => c.length)
+        .map(c => new ActionRowBuilder<MessageActionRowComponentBuilder>()
+          .addComponents(...c)),
       ephemeral: true,
     });
   },
