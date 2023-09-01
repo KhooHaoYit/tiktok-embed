@@ -59,7 +59,7 @@ export const tiktokAttachmentEmbedder = async function (postId: string, index: n
 
 async function getTikTokPost(postId: string) {
   return await request(
-    `${env.TIKTOK_API_URL}/tikTokPost/${postId}`,
+    `${env.TIKTOK_API_URL}/posts/${postId}`,
     {
       query: {
         includeAuthor: 1,
@@ -71,7 +71,7 @@ async function getTikTokPost(postId: string) {
 
 async function fetchTikTokPost(postId: string) {
   return await request(
-    `${env.TIKTOK_API_URL}/tikTokPost/${postId}/fetch`,
+    `${env.TIKTOK_API_URL}/posts/${postId}/fetch`,
     {
       method: 'POST',
       query: {
