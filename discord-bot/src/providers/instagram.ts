@@ -39,6 +39,16 @@ export async function activate(client: Client) {
 export async function onMessage(msg: Message) {
   return await extractLinks(msg.content, async shortcode => {
     const result = await getInstagramPost(shortcode)
+      .then(res => {
+        if (!res || typeof env.CACHE_DURATION !== 'number')
+          return res;
+        if (
+          Date.now() - new Date(res.i_updatedAt).getTime()
+          < env.CACHE_DURATION
+        )
+          return res;
+        return;
+      })
       || await fetchInstagramPost(shortcode);
     if (!result)
       throw new Error(`Unable to fetch instagram post`);

@@ -14,6 +14,7 @@ export const env = createEnv({
     SUGGESTION_CHANNEL_ID: z.string().optional(),
     SUPPORT_SERVER_INVITE_LINK: z.string().optional(),
     ENABLE_REPL: z.coerce.boolean().default(false),
+    CACHE_DURATION: z.coerce.number().optional(),
     // Tiktok
     TIKTOK_API_URL: z.string(),
     TIKTOK_API_ACCESS_TOKEN: z
