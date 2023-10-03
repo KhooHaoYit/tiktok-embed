@@ -52,6 +52,8 @@ export const instagramAttachmentEmbedder = async function (shortcode: string, in
       redirectUrl,
       image: {
         url: attachment.imageUrl,
+        width: attachment.width,
+        height: attachment.height,
       },
     };
 } satisfies DiscordEmbedder;

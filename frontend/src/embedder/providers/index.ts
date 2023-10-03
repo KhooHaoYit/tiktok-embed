@@ -29,5 +29,7 @@ type Image = {
   redirectUrl: string
   image: {
     url: string
+    width: number
+    height: number
   }
 };

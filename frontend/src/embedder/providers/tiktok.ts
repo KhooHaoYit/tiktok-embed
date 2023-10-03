@@ -53,6 +53,8 @@ export const tiktokAttachmentEmbedder = async function (postId: string, index: n
       redirectUrl,
       image: {
         url: attachment.imageUrl,
+        width: attachment.width,
+        height: attachment.height,
       },
     };
 } satisfies DiscordEmbedder;
