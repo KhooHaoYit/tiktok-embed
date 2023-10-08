@@ -87,8 +87,9 @@ export function getAttachments(data: Data) {
         .replace(/~[^.]+/, '');
       attachments.push({
         id: imageFilename.split('.')[0],
-        width: image.imageWidth,
-        height: image.imageHeight,
+        // TODO: check in future this will be flipped back
+        width: image.imageHeight,
+        height: image.imageWidth,
         imageUrl: image.imageURL.urlList[0],
         imageFilename,
       });

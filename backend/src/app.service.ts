@@ -38,41 +38,51 @@ export class AppService {
 
   async #handleAttachments(data: Data, cookies: string[]) {
     const attachments = getAttachments(data);
-    const newAttachment = await this.prisma.attachment.findMany({
+    await this.prisma.attachment.findMany({
       where: {
         id: {
           in: attachments.map(attachment => attachment.id),
         },
       },
       select: { id: true },
-    }).then(result =>
-      attachments.filter(attachment =>
-        !result.find(item => item.id === attachment.id)
-      )
-    );
-    await Promise.all(newAttachment.map(async attachment => {
-      const [imageUrl, videoUrl] = await Promise.all([
-        this.#uploadFile(attachment.imageUrl, attachment.imageFilename),
-        !attachment.videoUrl
-          ? undefined
-          : this.#uploadFile(
-            attachment.videoUrl, attachment.videoFilename!,
-            {
-              cookie: cookies.find(text => text.indexOf('tt_chain_token') !== -1)!.split(';')[0],
-              Referer: "https://www.tiktok.com/",
-            },
-          ),
-      ]);
-      await this.prisma.attachment.create({
-        data: {
-          id: attachment.id,
-          width: attachment.width,
-          height: attachment.height,
-          imageUrl,
-          videoUrl,
-        }
-      });
-    }));
+    }).then(result => Promise.all([
+      // Handle new attachment
+      attachments
+        .filter(attachment => !result.find(item => item.id === attachment.id))
+        .map(async attachment => {
+          const [imageUrl, videoUrl] = await Promise.all([
+            this.#uploadFile(attachment.imageUrl, attachment.imageFilename),
+            !attachment.videoUrl
+              ? undefined
+              : this.#uploadFile(
+                attachment.videoUrl, attachment.videoFilename!,
+                {
+                  cookie: cookies.find(text => text.indexOf('tt_chain_token') !== -1)!.split(';')[0],
+                  Referer: "https://www.tiktok.com/",
+                },
+              ),
+          ]);
+          await this.prisma.attachment.create({
+            data: {
+              id: attachment.id,
+              width: attachment.width,
+              height: attachment.height,
+              imageUrl,
+              videoUrl,
+            }
+          });
+        }),
+      // Handle old attachment
+      attachments
+        .filter(attachment => result.find(item => item.id === attachment.id))
+        .map(async attachment => this.prisma.attachment.update({
+          where: { id: attachment.id },
+          data: {
+            width: attachment.width,
+            height: attachment.height,
+          },
+        })),
+    ].flat()));
   }
 
   async #handlePost(data: Data) {
