@@ -59,7 +59,7 @@ export function getAuthorInfo(data: Data) {
   if (!userFromPost || !user)
     throw new Error(`Unable to extract data`);
   return {
-    id: userFromPost.id,
+    id: userFromPost.authorId,
     handle: userFromPost.author,
     username: userFromPost.nickname,
     avatarUrl: user.avatarLarger,
