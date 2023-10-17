@@ -29,7 +29,7 @@ export async function activate(client: Client) {
       content: pageIndexes
         .map(pageIndex => url.replace(/\d+$/, pageIndex + ''))
         .join('\n'),
-      components: pageIndexes.length === 5
+      components: currentIndex + 5 < +pageCount - 1
         ? buildComponent(+pageCount)
         : [],
     });
