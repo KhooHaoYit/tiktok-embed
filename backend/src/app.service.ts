@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { request } from 'undici';
-import { Data, Post, getAttachments, getAuthorInfo, getPostInfo } from './tiktokSchema';
-import { AttachmentBuilder, WebhookClient } from 'discord.js';
+import {
+  SIGI_STATE,
+  __UNIVERSAL_DATA_FOR_REHYDRATION__,
+  getAttachments,
+  getAuthorInfo,
+  getPostInfo,
+} from './tiktokSchema';
+import { WebhookClient } from 'discord.js';
 import { env } from './env';
 import { upload } from './attachmentUploader';
 
@@ -21,8 +27,8 @@ export class AppService {
 
   async scrapePost(id: string) {
     const {
-      data,
       res: { headers },
+      ...data
     } = await this.tryFetchPost(id);
     await Promise.all([
       this.#handleUser(data),
@@ -36,8 +42,11 @@ export class AppService {
     ]);
   }
 
-  async #handleAttachments(data: Data, cookies: string[]) {
-    const attachments = getAttachments(data);
+  async #handleAttachments(
+    data: { rehydrationData: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi: SIGI_STATE | null },
+    cookies: string[],
+  ) {
+    const attachments = getAttachments(data.rehydrationData, data.sigi);
     await this.prisma.attachment.findMany({
       where: {
         id: {
@@ -85,10 +94,12 @@ export class AppService {
     ].flat()));
   }
 
-  async #handlePost(data: Data) {
-    const post = getPostInfo(data);
-    const author = getAuthorInfo(data);
-    const attachmentIds = getAttachments(data).map(a => a.id);
+  async #handlePost(
+    data: { rehydrationData: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi: SIGI_STATE | null },
+  ) {
+    const post = getPostInfo(data.rehydrationData, data.sigi);
+    const author = getAuthorInfo(data.rehydrationData, data.sigi);
+    const attachmentIds = getAttachments(data.rehydrationData, data.sigi).map(a => a.id);
     await prismaUpsertRetry(this.prisma.post, {
       where: { id: post.id },
       update: {
@@ -121,8 +132,10 @@ export class AppService {
     });
   }
 
-  async #handleUser(data: Data) {
-    const user = getAuthorInfo(data);
+  async #handleUser(
+    data: { rehydrationData: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi: SIGI_STATE | null },
+  ) {
+    const user = getAuthorInfo(data.rehydrationData, data.sigi);
     const avatarUrl = await this.prisma.user.findUnique({
       where: { id: user.id },
       select: { avatarUrl: true },
@@ -162,15 +175,20 @@ export class AppService {
       const html = await res.body.text();
       if (res.statusCode !== 200)
         continue;
-      const data = JSON.parse(
+      const rehydrationData = JSON.parse(
+        html.match(/(?<=__UNIVERSAL_DATA_FOR_REHYDRATION__[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
+        ?? 'null'
+      ) as __UNIVERSAL_DATA_FOR_REHYDRATION__ | null;
+      if (!rehydrationData)
+        continue;
+      const sigi = JSON.parse(
         html.match(/(?<=SIGI_STATE[^>]+>)[^]+?(?=<\/script>)/)?.at(0)
         ?? 'null'
-      ) as Data | null;
-      if (!data)
-        continue;
+      ) as SIGI_STATE | null;
       return {
         res,
-        data,
+        sigi,
+        rehydrationData,
       };
     }
     throw new Error(`Unable to extract info`);

@@ -1,4 +1,4 @@
-export type Data = {
+export type SIGI_STATE = {
   ItemModule?: Record<string, Post>
   UserModule?: {
     users: Record<string, User>
@@ -38,10 +38,49 @@ export type Post = {
   }
 };
 
+export type __UNIVERSAL_DATA_FOR_REHYDRATION__ = {
+  __DEFAULT_SCOPE__: {
+    'webapp.video-detail'?: {
+      itemInfo: {
+        itemStruct: {
+          author: {
+            id: string
+            uniqueId: string
+            nickname: string
+            avatarLarger: string
+          }
+          desc: string
+          id: string
+          imagePost?: {
+            images: {
+              imageWidth: number
+              imageHeight: number
+              imageURL: {
+                urlList: string[]
+              }
+            }[]
+          }
+          video: {
+            width: number
+            height: number
+            originCover: string
+            downloadAddr: string
+            format: string
+          }
+          stats: {
+            diggCount: number
+            shareCount: number
+            commentCount: number
+          }
+        }
+      }
+    }
+  }
+}
 
-
-export function getPostInfo(data: Data) {
-  const post = Object.values(data.ItemModule ?? {}).at(0);
+export function getPostInfo(data: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi?: SIGI_STATE | null) {
+  const post = data.__DEFAULT_SCOPE__["webapp.video-detail"]?.itemInfo.itemStruct
+    ?? Object.values(sigi?.ItemModule ?? {}).at(0);
   if (!post)
     throw new Error(`Unable to extract data`);
   return {
@@ -53,9 +92,18 @@ export function getPostInfo(data: Data) {
   };
 }
 
-export function getAuthorInfo(data: Data) {
-  const userFromPost = Object.values(data.ItemModule ?? {}).at(0);
-  const user = Object.values(data.UserModule?.users ?? {}).at(0);
+export function getAuthorInfo(data: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi?: SIGI_STATE | null) {
+  if (data.__DEFAULT_SCOPE__["webapp.video-detail"]) {
+    const author = data.__DEFAULT_SCOPE__["webapp.video-detail"].itemInfo.itemStruct.author;
+    return {
+      id: author.id,
+      handle: author.uniqueId,
+      username: author.nickname,
+      avatarUrl: author.avatarLarger,
+    };
+  }
+  const userFromPost = Object.values(sigi?.ItemModule ?? {}).at(0);
+  const user = Object.values(sigi?.UserModule?.users ?? {}).at(0);
   if (!userFromPost || !user)
     throw new Error(`Unable to extract data`);
   return {
@@ -66,8 +114,9 @@ export function getAuthorInfo(data: Data) {
   };
 }
 
-export function getAttachments(data: Data) {
-  const post = Object.values(data.ItemModule ?? {}).at(0);
+export function getAttachments(data: __UNIVERSAL_DATA_FOR_REHYDRATION__, sigi?: SIGI_STATE | null) {
+  const post = data.__DEFAULT_SCOPE__["webapp.video-detail"]?.itemInfo.itemStruct
+    ?? Object.values(sigi?.ItemModule ?? {}).at(0);
   if (!post)
     throw new Error(`Unable to extract data`);
   const attachments: {
