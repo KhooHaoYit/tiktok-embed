@@ -13,7 +13,7 @@ dependencies:
     version: 1.0.7
   '@t3-oss/env-core':
     specifier: ^0.2.2
-    version: 0.2.2(zod@3.21.4)
+    version: 0.2.2(zod@3.22.3)
   discord.js:
     specifier: ^14.10.2
     version: 14.10.2
@@ -24,8 +24,8 @@ dependencies:
     specifier: ^5.26.2
     version: 5.26.2
   zod:
-    specifier: ^3.21.4
-    version: 3.21.4
+    specifier: ^3.22.3
+    version: 3.22.3
 
 devDependencies:
   '@types/node':
@@ -224,12 +224,12 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@t3-oss/env-core@0.2.2(zod@3.21.4):
+  /@t3-oss/env-core@0.2.2(zod@3.22.3):
     resolution: {integrity: sha512-Jiuph14/L3L9EDaU0O0YiLeaKUcWA9c3mWYuKem8+L64i3Iwz+IbKdl5Jp4cx+JbOsS/aptwGZplnxSHhm2gMQ==}
     peerDependencies:
       zod: ^3.0.0
     dependencies:
-      zod: 3.21.4
+      zod: 3.22.3
     dev: false
 
   /@tokenizer/token@0.3.0:
@@ -1162,6 +1162,6 @@ packages:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: false
 
-  /zod@3.21.4:
-    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
