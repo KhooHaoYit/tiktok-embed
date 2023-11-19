@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@t3-oss/env-nextjs':
     specifier: ^0.2.2
-    version: 0.2.2(zod@3.21.4)
+    version: 0.2.2(zod@3.22.3)
   next:
     specifier: 13.2.4
     version: 13.2.4(react-dom@18.2.0)(react@18.2.0)
@@ -21,8 +21,8 @@ dependencies:
     specifier: ^5.26.2
     version: 5.26.2
   zod:
-    specifier: ^3.21.4
-    version: 3.21.4
+    specifier: ^3.22.3
+    version: 3.22.3
 
 devDependencies:
   '@types/node':
@@ -172,21 +172,21 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@t3-oss/env-core@0.2.2(zod@3.21.4):
+  /@t3-oss/env-core@0.2.2(zod@3.22.3):
     resolution: {integrity: sha512-Jiuph14/L3L9EDaU0O0YiLeaKUcWA9c3mWYuKem8+L64i3Iwz+IbKdl5Jp4cx+JbOsS/aptwGZplnxSHhm2gMQ==}
     peerDependencies:
       zod: ^3.0.0
     dependencies:
-      zod: 3.21.4
+      zod: 3.22.3
     dev: false
 
-  /@t3-oss/env-nextjs@0.2.2(zod@3.21.4):
+  /@t3-oss/env-nextjs@0.2.2(zod@3.22.3):
     resolution: {integrity: sha512-9LnVpTkf/8WkggyVN6Liz9Ma9a7fLzV00b5BngWj3HI3iWDfddsWaqCf/H0f46Bgu29NubP3Bwajf1JieVrxFA==}
     peerDependencies:
       zod: ^3.0.0
     dependencies:
-      '@t3-oss/env-core': 0.2.2(zod@3.21.4)
-      zod: 3.21.4
+      '@t3-oss/env-core': 0.2.2(zod@3.22.3)
+      zod: 3.22.3
     dev: false
 
   /@types/node@18.15.11:
@@ -366,6 +366,6 @@ packages:
       '@fastify/busboy': 2.0.0
     dev: false
 
-  /zod@3.21.4:
-    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
