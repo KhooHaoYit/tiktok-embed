@@ -24,6 +24,10 @@ import {
   activate as instagramActivate,
   onMessage as instagramOnMessage,
 } from "./providers/instagram";
+import {
+  activate as twitchActivate,
+  onMessage as twitchOnMessage,
+} from "./providers/twitch";
 import { activate } from "./commands";
 import { isEnabled } from "./config";
 
@@ -96,6 +100,12 @@ const onMessage = async (msg: Message) => {
       await tiktokOnMessage(msg)
         .then(onResults);
     }),
+    isEnabled(msg.guild.id, 'twitch').then(async enabled => {
+      if (!enabled)
+        return;
+      await twitchOnMessage(msg)
+        .then(onResults);
+    }),
   ]);
 
   if (hasError)
@@ -119,6 +129,7 @@ const setup = (client: Client) => {
   });
   tiktokActivate(client);
   instagramActivate(client);
+  twitchActivate(client);
 }
 
 const client = new Client(clinetOptions);

@@ -61,9 +61,11 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
   const [
     tiktok,
     instagram,
+    twitch,
   ] = await Promise.all([
     isEnabled(guild.id, 'tiktok'),
     isEnabled(guild.id, 'instagram'),
+    isEnabled(guild.id, 'twitch'),
   ]);
   return {
     embeds: [
@@ -81,6 +83,11 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
             value: instagram ? 'Enabled' : 'Disabled',
             inline: true,
           },
+          {
+            name: 'Twitch',
+            value: twitch ? 'Enabled' : 'Disabled',
+            inline: true,
+          },
         ]),
     ],
     components: [
@@ -94,6 +101,10 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
             .setStyle(ButtonStyle.Primary)
             .setLabel('Toggle Instagram')
             .setCustomId('configure.instagram'),
+          new ButtonBuilder()
+            .setStyle(ButtonStyle.Primary)
+            .setLabel('Toggle Twitch')
+            .setCustomId('configure.twitch'),
         ),
     ],
     ephemeral: true,

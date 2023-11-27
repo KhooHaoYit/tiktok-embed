@@ -4,7 +4,14 @@ import { env } from "@/env";
 
 
 
-export const instagramEmbedEmbedder = async function (shortcode: string) {
+export const instagramEmbedEmbedder = async function (
+  {
+    shortcode,
+    host,
+  }: {
+    shortcode: string
+    host: string
+  }) {
   const result = await getInstagramPost(shortcode)
     || await fetchInstagramPost(shortcode);
   if (!result)
@@ -27,11 +34,20 @@ export const instagramEmbedEmbedder = async function (shortcode: string) {
       authorUrl: redirectUrl,
       title: `${result.author.username} (@${result.author.handle})`,
       description: result.description,
+      oembedUrl: `https://${host}/api/oembed?type=instagram&shortcode=${result.shortcode}`,
     },
   };
 } satisfies DiscordEmbedder;
 
-export const instagramAttachmentEmbedder = async function (shortcode: string, index: number) {
+export const instagramAttachmentEmbedder = async function (
+  {
+    shortcode,
+    index,
+  }: {
+    shortcode: string
+    index: number
+  }
+) {
   const result = await getInstagramPost(shortcode)
     || await fetchInstagramPost(shortcode);
   if (!result)

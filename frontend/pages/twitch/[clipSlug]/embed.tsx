@@ -1,5 +1,5 @@
 import { RenderEmbedder } from '@/embedder/providers';
-import { tiktokEmbedEmbedder } from '@/embedder/providers/tiktok';
+import { twitchEmbedEmbedder } from '@/embedder/providers/twitch';
 import {
   GetServerSideProps,
   InferGetServerSidePropsType,
@@ -15,9 +15,9 @@ export default function Page(props: InferGetServerSidePropsType<typeof getServer
 }
 
 export const getServerSideProps = async function (context) {
-  const postId = context.query.postId as string;
-  const result = await tiktokEmbedEmbedder({
-    postId,
+  const clipSlug = context.query.clipSlug as string;
+  const result = await twitchEmbedEmbedder({
+    clipSlug,
     host: context.req.headers.host!,
   });
   return {

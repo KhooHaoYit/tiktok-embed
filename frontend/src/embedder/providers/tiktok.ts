@@ -4,7 +4,15 @@ import { DiscordEmbedder } from ".";
 
 
 
-export const tiktokEmbedEmbedder = async function (postId: string) {
+export const tiktokEmbedEmbedder = async function (
+  {
+    postId,
+    host,
+  }: {
+    postId: string
+    host: string
+  }
+) {
   const result = await getTikTokPost(postId)
     || await fetchTikTokPost(postId);
   if (!result)
@@ -28,11 +36,20 @@ export const tiktokEmbedEmbedder = async function (postId: string) {
       authorUrl: redirectUrl,
       title: `${result.author.username} (@${result.author.handle})`,
       description: result.description,
+      oembedUrl: `https://${host}/api/oembed?type=tiktok&postId=${postId}`,
     },
   };
 } satisfies DiscordEmbedder;
 
-export const tiktokAttachmentEmbedder = async function (postId: string, index: number) {
+export const tiktokAttachmentEmbedder = async function (
+  {
+    postId,
+    index,
+  }: {
+    postId: string
+    index: number
+  }
+) {
   const result = await getTikTokPost(postId)
     || await fetchTikTokPost(postId);
   if (!result)
