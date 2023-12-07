@@ -28,6 +28,10 @@ import {
   activate as twitchActivate,
   onMessage as twitchOnMessage,
 } from "./providers/twitch";
+import {
+  activate as pixivActivate,
+  onMessage as pixivOnMessage,
+} from "./providers/pixiv";
 import { activate } from "./commands";
 import { isEnabled } from "./config";
 
@@ -106,6 +110,12 @@ const onMessage = async (msg: Message) => {
       await twitchOnMessage(msg)
         .then(onResults);
     }),
+    isEnabled(msg.guild.id, 'pixiv').then(async enabled => {
+      if (!enabled)
+        return;
+      await pixivOnMessage(msg)
+        .then(onResults);
+    }),
   ]);
 
   if (hasError)
@@ -130,6 +140,7 @@ const setup = (client: Client) => {
   tiktokActivate(client);
   instagramActivate(client);
   twitchActivate(client);
+  pixivActivate(client);
 }
 
 const client = new Client(clinetOptions);

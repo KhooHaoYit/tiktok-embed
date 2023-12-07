@@ -62,10 +62,12 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
     tiktok,
     instagram,
     twitch,
+    pixiv,
   ] = await Promise.all([
     isEnabled(guild.id, 'tiktok'),
     isEnabled(guild.id, 'instagram'),
     isEnabled(guild.id, 'twitch'),
+    isEnabled(guild.id, 'pixiv'),
   ]);
   return {
     embeds: [
@@ -88,6 +90,11 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
             value: twitch ? 'Enabled' : 'Disabled',
             inline: true,
           },
+          {
+            name: 'Pixiv',
+            value: pixiv ? 'Enabled' : 'Disabled',
+            inline: true,
+          },
         ]),
     ],
     components: [
@@ -105,6 +112,10 @@ async function makeReply(guild: Guild): Promise<InteractionReplyOptions & Intera
             .setStyle(ButtonStyle.Primary)
             .setLabel('Toggle Twitch')
             .setCustomId('configure.twitch'),
+          new ButtonBuilder()
+            .setStyle(ButtonStyle.Primary)
+            .setLabel('Toggle Pixiv')
+            .setCustomId('configure.pixiv'),
         ),
     ],
     ephemeral: true,

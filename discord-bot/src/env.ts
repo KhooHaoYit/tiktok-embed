@@ -27,6 +27,8 @@ export const env = createEnv({
       .optional(),
     // Twitch
     TWITCH_API_URL: z.string(),
+    // Pixiv
+    PIXIV_API_URL: z.string(),
     // Sentry
     SENTRY_DSN: z.string().optional(),
     SENTRY_ENVIRONMENT: z.enum(['local', 'production']).default('local'),

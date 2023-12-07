@@ -1,4 +1,5 @@
 import { instagramEmbedEmbedder } from "@/embedder/providers/instagram";
+import { pixivEmbedEmbedder } from "@/embedder/providers/pixiv";
 import { tiktokEmbedEmbedder } from "@/embedder/providers/tiktok";
 import { twitchEmbedEmbedder } from "@/embedder/providers/twitch";
 import { NextApiRequest, NextApiResponse } from "next"
@@ -32,6 +33,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'twitch': {
       const clipSlug = req.query.clipSlug as string;
       const { embed } = await twitchEmbedEmbedder({ clipSlug, host });
+      res.status(200)
+        .json({
+          author_name: embed.authorName,
+          author_url: embed.authorUrl,
+          provider_name: embed.providerName,
+        });
+    } break;
+    case 'pixiv': {
+      const artworkId = req.query.artworkId as string;
+      const { embed } = await pixivEmbedEmbedder({ artworkId, host });
       res.status(200)
         .json({
           author_name: embed.authorName,

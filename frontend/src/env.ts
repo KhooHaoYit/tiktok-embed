@@ -9,6 +9,7 @@ export const env = createEnv({
       .string()
       .optional(),
     TWITCH_API_URL: z.string(),
+    PIXIV_API_URL: z.string(),
   },
   client: {},
   runtimeEnv: {
@@ -16,5 +17,6 @@ export const env = createEnv({
     INSTAGRAM_API_URL: process.env.INSTAGRAM_API_URL,
     INSTAGRAM_API_ACCESS_TOKEN: process.env.INSTAGRAM_API_ACCESS_TOKEN,
     TWITCH_API_URL: process.env.TWITCH_API_URL,
+    PIXIV_API_URL: process.env.PIXIV_API_URL,
   },
 });
