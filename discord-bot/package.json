@@ -9,7 +9,7 @@
 		"@t3-oss/env-core": "^0.2.2",
 		"discord.js": "^14.10.2",
 		"dotenv": "^16.0.3",
-		"undici": "^5.26.2",
+		"undici": "^5.28.3",
 		"zod": "^3.22.3"
 	},
 	"devDependencies": {
